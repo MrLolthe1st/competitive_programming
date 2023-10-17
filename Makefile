@@ -71,7 +71,7 @@ prepare_debug: debug/$(DEPDIR)/.exists debug/$(OBJDIR)/.exists $(DEPDIR)/.exists
 $(BINARY): $(OBJECTS)
 	$(CXX) $(LDFLAGS) $(OBJECTS) -o $(BINARY)
 $(DEBUG_BINARY): $(DEBUG_OBJECTS)
-	$(CXX) -d3 $(DEBUG_OBJECTS) -o $(DEBUG_BINARY)
+	$(CXX) -g $(DEBUG_OBJECTS) -o $(DEBUG_BINARY)
 
 $(OBJDIR)/%_c.o: $(SRCDIR)/%.c
 	$(C) $(CFLAGS) -c -Werror -pedantic -I$(INCLUDE_DIR) $(SRCDIR)/$*.c -o $(OBJDIR)/$*_c.o -MMD -MF $(DEPDIR)/$*_c.d
@@ -80,10 +80,10 @@ $(OBJDIR)/%_cpp.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c -Werror -pedantic -I$(INCLUDE_DIR) $(SRCDIR)/$*.cpp -o $(OBJDIR)/$*_cpp.o -MMD -MF $(DEPDIR)/$*_cpp.d
 
 debug/$(OBJDIR)/%_c.o: $(SRCDIR)/%.c
-	$(C) $(CFLAGS) -d3 -c -Werror -pedantic -I$(INCLUDE_DIR) $(SRCDIR)/$*.c -o debug/$(OBJDIR)/$*_c.o -MMD -MF debug/$(DEPDIR)/$*_c.d
+	$(C) $(CFLAGS) -g -c -Werror -pedantic -I$(INCLUDE_DIR) $(SRCDIR)/$*.c -o debug/$(OBJDIR)/$*_c.o -MMD -MF debug/$(DEPDIR)/$*_c.d
 
 debug/$(OBJDIR)/%_cpp.o: $(SRCDIR)/%.cpp
-	$(CXX) $(CXXFLAGS) -d3 -c -Werror -pedantic -I$(INCLUDE_DIR) $(SRCDIR)/$*.cpp -o debug/$(OBJDIR)/$*_cpp.o -MMD -MF debug/$(DEPDIR)/$*_cpp.d
+	$(CXX) $(CXXFLAGS) -g -c -Werror -pedantic -I$(INCLUDE_DIR) $(SRCDIR)/$*.cpp -o debug/$(OBJDIR)/$*_cpp.o -MMD -MF debug/$(DEPDIR)/$*_cpp.d
 
 clean:
 	rm -r $(OBJDIR) || echo 1

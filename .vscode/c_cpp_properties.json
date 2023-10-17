@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${default}"
+            ],
+            "windowsSdkVersion": "10.0.19041.0",
+            "cStandard": "c17",
+            "compilerPath": "C:\\work\\mingw\\bin\\g++",
+            "compilerArgs": [
+                "-std=c++2a"
+            ],
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ],
+    "version": 4
+}
