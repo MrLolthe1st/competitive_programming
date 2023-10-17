@@ -2,3 +2,6 @@ debug/*
 *.exe
 dep/*
 obj/*
+out.cpp
+preprocessor_inc/*
+preprocessor_src/*

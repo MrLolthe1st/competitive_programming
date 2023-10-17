@@ -1,69 +1,79 @@
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <helpers.h>
+#include <mod_math.h>
 #include <segtree.h>
 #include <iostream>
+#include <chrono>
+#include <iomanip>
+#include <sstream>
+#include <hashes.h>
+#include <set>
+#include <vector>
+#include <string>
 
-using namespace std;
+#ifdef PREPROCESSOR_
+####
+#endif
+
+void Solve(std::istream& cin, std::ostream& cout) {
+    int n, m;
+    cin >> n >> m;
+    std::vector<int> a(n), b(m);
+    for (auto &e: a) cin >> e;
+    for (auto &e: b) cin >> e;
+    auto ah = HashedContainer(a), bh = HashedContainer(b);
+    auto r = ah.LongestPoly();
+    cout << r.second - r.first + 1 << "\n";
+}
+
+void SolveSlow(std::istream& cin, std::ostream& cout) {
+
+}
+
+bool Checker(std::istream& cin, std::istream& out1, std::istream& out2) {
+    return true;
+}
+
+bool check(const std::string& input) {
+    std::stringstream in1, in2, out1, out2, fin;
+    in1 << input; in2 << input; fin << input;
+    in1.flush(); in2.flush(); fin.flush();
+    Solve(in1, out1);
+    SolveSlow(in2, out2);
+    return Checker(fin, out1, out2);
+}
+
+std::string GenerateInput() {
+    return "";
+}
+
+void Stress() {
+    while (1) {
+        auto input = GenerateInput();
+        if (!check(input)) {
+            throw std::runtime_error(":(");
+        }
+    }
+}
 
 int main() {
-    ios::sync_with_stdio(0);
-	cin.tie(0);
-	cout.tie(0);
-	int t;
-	cin >> t;
-	while (t--) {
-		int n, k;
-		cin >> n >> k;
-		vector<int> a(n);
-		for (auto& e : a) cin >> e, --e;
-		auto mn = [](int a, int b) { return a < b ? a : b;  };
-		TSegTree st(mn, a);
-		vector<bool> was(k);
-		vector<pair<int, int>> ans(k);
-		for (int i = 0; i < n; ++i) {
-			if (was[a[i]]) continue;
-			was[a[i]] = 1;
-			st.UpdateAt(a[i], i);
-			ans[a[i]].first = st.Query(a[i], k - 1, mn, [](int x) {return x; });
-		}
-		was.assign(k, 0);
-		for (int i = n - 1; i > -1; --i) {
-			if (was[a[i]]) continue;
-			was[a[i]] = 1;
-			st.UpdateAt(a[i], -i);
-			ans[a[i]].second = -st.Query(a[i], k - 1, mn, [](int x) {return x; });
-		}
-		for (int i = 0; i < k; ++i) {
-			if (!was[i]) {
-				cout << "0 ";
-				continue;
-			}
-			cout << (1 + ans[i].second - ans[i].first) * 2 << " ";
-		}
-		cout << "\n";
-	}
-    /*
-    std::vector<int> v(100);
-    for (int i = 0; i < 100; ++i) {
-        v[i] = -25+(rand() % 50);
+    #ifndef LOCAL_
+    std::ios::sync_with_stdio(0);
+    std::cin.tie(0);
+    std::cout.tie(0);
+    #else
+    auto __beg = std::chrono::steady_clock::now();
+    #endif
+
+    int t = 1;
+    //std::cin >> t;
+    while (t--) {
+        Solve(std::cin, std::cout);
+        std::cout << "\n";
     }
-    auto sm = [](int a, int b){return a+b;};
-    TSegTree s(sm, v);
-    while (1) {
-        if (rand() % 2) {
-            size_t l = rand() % v.size(), r = std::min(l + (rand() % v.size()), v.size() - 1);
-            auto s1 = s.Query(l, r, sm, MapIdenity<int>());
-            int s2 = 0;
-            while (l <= r) {
-                s2 += v[l];
-                ++l;
-            }
-            if (s1 != s2) {
-                exit(-1);
-            }
-        } else {
-            size_t i = rand() % v.size();
-            int nw = -25+(rand() % 50);
-            s.UpdateAt(i, nw);
-            v[nw] = 1;
-        }
-    }*/
+
+    #ifdef LOCAL_
+    std::cerr << "Completed in " << std::setprecision(7) << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - __beg).count() * 1e-6 << "s\n";
+    #endif
 }

@@ -2,7 +2,7 @@ CXX=g++
 C=gcc
 STD=c++2a
 
-CXXFLAGS=-std=$(STD) -DLOCAL_ -I$(INCLUDE_DIR)
+CXXFLAGS=-std=$(STD) -DLOCAL_ -I$(INCLUDE_DIR) -m64 -Wunreachable-code
 CFLAGS=
 LDFLAGS=
 
@@ -89,6 +89,38 @@ clean:
 	rm -r $(OBJDIR) || echo 1
 	rm -r $(DEPDIR) || echo 1
 	rm -r debug || echo 1
+	rm -r preprocessor_inc || echo 1
+	rm -r preprocessor_src || echo 1
 	rm $(BINARY) || echo 1
+	rm out.cpp || echo 1
+
+HEADERS_ = $(wildcard $(INCLUDE_DIR)/*.h)
+HEADERS_INC = $(HEADERS_:$(INCLUDE_DIR)%=preprocessor_inc/%)
+SRC_INC = $(SOURCES:$(SRCDIR)/%=preprocessor_src/%)
+SRC_INC_INCL = $(SRC_INC:preprocessor_src/%=preprocessor_src\\\\\\/%)
+
+preprocessor_inc/%: $(INCLUDE_DIR)/%
+	grep -E -v "^#include <[A-z_]+?>" $(INCLUDE_DIR)/$* | grep -E -v "^#include <stdint.h>" | grep -E -v "^#include <stddef.h>" > preprocessor_inc/$*
+
+preprocessor_src/%: $(SRCDIR)/%
+	grep -E -v "^#include <[A-z_]+?>" $(SRCDIR)/$* | grep -E -v "^#include <stdint.h>" | grep -E -v "^#include <stddef.h>" > preprocessor_src/$*
+
+preprocessor_inc/.exists:
+	mkdir preprocessor_inc
+	echo 1 > preprocessor_inc/.exists
+preprocessor_src/.exists:
+	mkdir preprocessor_src
+	echo 1 > preprocessor_src/.exists
+
+preprocessor_src/main_.cpp: preprocessor_inc/.exists preprocessor_src/.exists $(HEADERS_INC) $(SRC_INC)
+	sed -E "s/####/$(shell echo $(SRC_INC_INCL) | sed -E "s/ /\n/g" | grep -v main.cpp | xargs) /g" preprocessor_src/main.cpp > preprocessor_src/main_.cpp
+	sed -i -E "s/.cpp preprocessor_src/.cpp\npreprocessor_src/g" preprocessor_src/main_.cpp
+	sed -i -E "s/preprocessor_src\/(.+?)/#include <\1>/g" preprocessor_src/main_.cpp
+	sed -i -E "s/ >/>/g" preprocessor_src/main_.cpp
+out.cpp: preprocessor_src/main_.cpp
+	cat $(HEADERS_) $(SOURCES) | grep -E "^#include <[A-z_]+>" > out.cpp
+	$(CXX) -E -std=$(STD) -Ipreprocessor_inc -Ipreprocessor_src -DPREPROCESSOR_ -nostdinc preprocessor_src/main_.cpp -undef | grep -E -v "^# " | grep -E "[^\s]+" >> out.cpp
+source: out.cpp
+	
 
 -include $(SOURCES_DEPS) $(SOURCES_DEBUG_DEPS)

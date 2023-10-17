@@ -7,7 +7,7 @@
             ],
             "windowsSdkVersion": "10.0.19041.0",
             "cStandard": "c17",
-            "compilerPath": "C:\\work\\mingw\\bin\\g++",
+            "compilerPath": "C:\\work\\mgw\\bin\\g++.exe",
             "compilerArgs": [
                 "-std=c++2a"
             ],
